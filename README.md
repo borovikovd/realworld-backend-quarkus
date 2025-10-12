@@ -1,23 +1,70 @@
-# ![RealWorld Example App](logo.png)
+# realworld-api
 
-> ### [YOUR_FRAMEWORK] codebase containing real world examples (CRUD, auth, advanced patterns, etc) that adheres to the [RealWorld](https://github.com/gothinkster/realworld) spec and API.
+This project uses Quarkus, the Supersonic Subatomic Java Framework.
 
+If you want to learn more about Quarkus, please visit its website: <https://quarkus.io/>.
 
-### [Demo](https://demo.realworld.build/)&nbsp;&nbsp;&nbsp;&nbsp;[RealWorld](https://github.com/gothinkster/realworld)
+## Running the application in dev mode
 
+You can run your application in dev mode that enables live coding using:
 
-This codebase was created to demonstrate a fully fledged fullstack application built with **[YOUR_FRAMEWORK]** including CRUD operations, authentication, routing, pagination, and more.
+```shell script
+./gradlew quarkusDev
+```
 
-We've gone to great lengths to adhere to the **[YOUR_FRAMEWORK]** community styleguides & best practices.
+> **_NOTE:_**  Quarkus now ships with a Dev UI, which is available in dev mode only at <http://localhost:8080/q/dev/>.
 
-For more information on how to this works with other frontends/backends, head over to the [RealWorld](https://github.com/gothinkster/realworld) repo.
+## Packaging and running the application
 
+The application can be packaged using:
 
-# How it works
+```shell script
+./gradlew build
+```
 
-> Describe the general architecture of your app here
+It produces the `quarkus-run.jar` file in the `build/quarkus-app/` directory.
+Be aware that it’s not an _über-jar_ as the dependencies are copied into the `build/quarkus-app/lib/` directory.
 
-# Getting started
+The application is now runnable using `java -jar build/quarkus-app/quarkus-run.jar`.
 
-> npm install, npm start, etc.
+If you want to build an _über-jar_, execute the following command:
 
+```shell script
+./gradlew build -Dquarkus.package.jar.type=uber-jar
+```
+
+The application, packaged as an _über-jar_, is now runnable using `java -jar build/*-runner.jar`.
+
+## Creating a native executable
+
+You can create a native executable using:
+
+```shell script
+./gradlew build -Dquarkus.native.enabled=true
+```
+
+Or, if you don't have GraalVM installed, you can run the native executable build in a container using:
+
+```shell script
+./gradlew build -Dquarkus.native.enabled=true -Dquarkus.native.container-build=true
+```
+
+You can then execute your native executable with: `./build/realworld-api-1.0.0-runner`
+
+If you want to learn more about building native executables, please consult <https://quarkus.io/guides/gradle-tooling>.
+
+## Related Guides
+
+- REST ([guide](https://quarkus.io/guides/rest)): A Jakarta REST implementation utilizing build time processing and Vert.x. This extension is not compatible with the quarkus-resteasy extension, or any of the extensions that depend on it.
+- REST Jackson ([guide](https://quarkus.io/guides/rest#json-serialisation)): Jackson serialization support for Quarkus REST. This extension is not compatible with the quarkus-resteasy extension, or any of the extensions that depend on it
+- JDBC Driver - PostgreSQL ([guide](https://quarkus.io/guides/datasource)): Connect to the PostgreSQL database via JDBC
+- Kotlin ([guide](https://quarkus.io/guides/kotlin)): Write your services in Kotlin
+- Swagger UI ([guide](https://quarkus.io/guides/openapi-swaggerui)): Swagger UI
+
+## Provided Code
+
+### REST
+
+Easily start your REST Web Services
+
+[Related guide section...](https://quarkus.io/guides/getting-started-reactive#reactive-jax-rs-resources)
