@@ -11,7 +11,6 @@ import jakarta.annotation.security.RolesAllowed
 import jakarta.enterprise.context.ApplicationScoped
 import jakarta.inject.Inject
 import jakarta.ws.rs.core.Response
-import java.time.ZoneOffset
 import com.example.api.model.Article as ArticleDto
 
 @ApplicationScoped
@@ -46,8 +45,8 @@ class ArticleResource : ArticlesApi {
                         .description(created.description)
                         .body(created.body)
                         .tagList(created.tags.toList())
-                        .createdAt(created.createdAt.atOffset(ZoneOffset.UTC))
-                        .updatedAt(created.updatedAt.atOffset(ZoneOffset.UTC))
+                        .createdAt(created.createdAt)
+                        .updatedAt(created.updatedAt)
                         .favorited(false)
                         .favoritesCount(0)
                         .author(
@@ -81,8 +80,8 @@ class ArticleResource : ArticlesApi {
                         .description(article.description)
                         .body(article.body)
                         .tagList(article.tags.toList())
-                        .createdAt(article.createdAt.atOffset(ZoneOffset.UTC))
-                        .updatedAt(article.updatedAt.atOffset(ZoneOffset.UTC))
+                        .createdAt(article.createdAt)
+                        .updatedAt(article.updatedAt)
                         .favorited(false)
                         .favoritesCount(0)
                         .author(
@@ -148,8 +147,8 @@ class ArticleResource : ArticlesApi {
                         .description(updated.description)
                         .body(updated.body)
                         .tagList(updated.tags.toList())
-                        .createdAt(updated.createdAt.atOffset(ZoneOffset.UTC))
-                        .updatedAt(updated.updatedAt.atOffset(ZoneOffset.UTC))
+                        .createdAt(updated.createdAt)
+                        .updatedAt(updated.updatedAt)
                         .favorited(false)
                         .favoritesCount(0)
                         .author(

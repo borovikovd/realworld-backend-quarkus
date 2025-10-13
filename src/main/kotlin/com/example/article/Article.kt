@@ -3,7 +3,7 @@ package com.example.article
 import com.example.shared.exceptions.ForbiddenException
 import com.example.shared.exceptions.ValidationException
 import com.example.shared.utils.SlugUtils
-import java.time.LocalDateTime
+import java.time.OffsetDateTime
 
 class Article private constructor(
     var id: Long?,
@@ -13,8 +13,8 @@ class Article private constructor(
     var body: String,
     val authorId: Long,
     val tags: MutableSet<String>,
-    val createdAt: LocalDateTime,
-    var updatedAt: LocalDateTime,
+    val createdAt: OffsetDateTime,
+    var updatedAt: OffsetDateTime,
 ) {
     companion object {
         fun create(
@@ -26,7 +26,7 @@ class Article private constructor(
         ): Article {
             validate(title, description, body)
 
-            val now = LocalDateTime.now()
+            val now = OffsetDateTime.now()
             val slug = SlugUtils.toSlug(title)
 
             return Article(
@@ -50,8 +50,8 @@ class Article private constructor(
             body: String,
             authorId: Long,
             tags: Set<String>,
-            createdAt: LocalDateTime,
-            updatedAt: LocalDateTime,
+            createdAt: OffsetDateTime,
+            updatedAt: OffsetDateTime,
         ): Article =
             Article(
                 id,
@@ -118,7 +118,7 @@ class Article private constructor(
             }
         }
 
-        this.updatedAt = LocalDateTime.now()
+        this.updatedAt = OffsetDateTime.now()
     }
 
     fun canBeDeletedBy(userId: Long): Boolean = userId == authorId

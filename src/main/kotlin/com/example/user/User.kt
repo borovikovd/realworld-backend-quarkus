@@ -1,7 +1,7 @@
 package com.example.user
 
 import com.example.shared.exceptions.ValidationException
-import java.time.LocalDateTime
+import java.time.OffsetDateTime
 
 class User private constructor(
     var id: Long?,
@@ -10,8 +10,8 @@ class User private constructor(
     var passwordHash: String,
     var bio: String?,
     var image: String?,
-    val createdAt: LocalDateTime,
-    var updatedAt: LocalDateTime,
+    val createdAt: OffsetDateTime,
+    var updatedAt: OffsetDateTime,
 ) {
     companion object {
         private val EMAIL_REGEX = "^[A-Za-z0-9+_.-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,}$".toRegex()
@@ -22,7 +22,7 @@ class User private constructor(
             passwordHash: String,
         ): User {
             validate(email, username)
-            val now = LocalDateTime.now()
+            val now = OffsetDateTime.now()
             return User(
                 id = null,
                 email = email,
@@ -42,8 +42,8 @@ class User private constructor(
             passwordHash: String,
             bio: String?,
             image: String?,
-            createdAt: LocalDateTime,
-            updatedAt: LocalDateTime,
+            createdAt: OffsetDateTime,
+            updatedAt: OffsetDateTime,
         ): User = User(id, email, username, passwordHash, bio, image, createdAt, updatedAt)
 
         private fun validate(
@@ -88,11 +88,11 @@ class User private constructor(
         }
         this.bio = bio
         this.image = image
-        this.updatedAt = LocalDateTime.now()
+        this.updatedAt = OffsetDateTime.now()
     }
 
     fun updatePassword(newPasswordHash: String) {
         this.passwordHash = newPasswordHash
-        this.updatedAt = LocalDateTime.now()
+        this.updatedAt = OffsetDateTime.now()
     }
 }

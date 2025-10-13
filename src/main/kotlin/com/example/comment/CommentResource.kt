@@ -10,7 +10,6 @@ import jakarta.annotation.security.RolesAllowed
 import jakarta.enterprise.context.ApplicationScoped
 import jakarta.inject.Inject
 import jakarta.ws.rs.core.Response
-import java.time.ZoneOffset
 import com.example.api.model.Comment as CommentDto
 
 @ApplicationScoped
@@ -35,8 +34,8 @@ class CommentResource : CommentsApi {
                 CreateArticleComment200Response().comment(
                     CommentDto()
                         .id(createdComment.id?.toInt())
-                        .createdAt(createdComment.createdAt.atOffset(ZoneOffset.UTC))
-                        .updatedAt(createdComment.updatedAt.atOffset(ZoneOffset.UTC))
+                        .createdAt(createdComment.createdAt)
+                        .updatedAt(createdComment.updatedAt)
                         .body(createdComment.body)
                         .author(
                             Profile()
@@ -67,8 +66,8 @@ class CommentResource : CommentsApi {
             comments.map { comment ->
                 CommentDto()
                     .id(comment.id?.toInt())
-                    .createdAt(comment.createdAt.atOffset(ZoneOffset.UTC))
-                    .updatedAt(comment.updatedAt.atOffset(ZoneOffset.UTC))
+                    .createdAt(comment.createdAt)
+                    .updatedAt(comment.updatedAt)
                     .body(comment.body)
                     .author(
                         Profile()

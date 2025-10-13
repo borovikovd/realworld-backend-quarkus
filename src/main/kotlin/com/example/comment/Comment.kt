@@ -2,15 +2,15 @@ package com.example.comment
 
 import com.example.shared.exceptions.ForbiddenException
 import com.example.shared.exceptions.ValidationException
-import java.time.LocalDateTime
+import java.time.OffsetDateTime
 
 class Comment private constructor(
     var id: Long?,
     val articleId: Long,
     val authorId: Long,
     var body: String,
-    val createdAt: LocalDateTime,
-    var updatedAt: LocalDateTime,
+    val createdAt: OffsetDateTime,
+    var updatedAt: OffsetDateTime,
 ) {
     companion object {
         fun create(
@@ -20,7 +20,7 @@ class Comment private constructor(
         ): Comment {
             validate(body)
 
-            val now = LocalDateTime.now()
+            val now = OffsetDateTime.now()
             return Comment(
                 id = null,
                 articleId = articleId,
@@ -36,8 +36,8 @@ class Comment private constructor(
             articleId: Long,
             authorId: Long,
             body: String,
-            createdAt: LocalDateTime,
-            updatedAt: LocalDateTime,
+            createdAt: OffsetDateTime,
+            updatedAt: OffsetDateTime,
         ): Comment = Comment(id, articleId, authorId, body, createdAt, updatedAt)
 
         private fun validate(body: String) {

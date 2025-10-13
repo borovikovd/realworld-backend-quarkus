@@ -29,12 +29,12 @@ table "users" {
   }
   column "created_at" {
     null    = false
-    type    = timestamp
+    type    = timestamptz
     default = sql("CURRENT_TIMESTAMP")
   }
   column "updated_at" {
     null    = false
-    type    = timestamp
+    type    = timestamptz
     default = sql("CURRENT_TIMESTAMP")
   }
   primary_key {
@@ -112,12 +112,12 @@ table "articles" {
   }
   column "created_at" {
     null    = false
-    type    = timestamp
+    type    = timestamptz
     default = sql("CURRENT_TIMESTAMP")
   }
   column "updated_at" {
     null    = false
-    type    = timestamp
+    type    = timestamptz
     default = sql("CURRENT_TIMESTAMP")
   }
   primary_key {
@@ -139,8 +139,10 @@ table "articles" {
     columns = [column.author_id]
   }
   index "idx_articles_created_at" {
-    columns = [column.created_at]
-    type    = DESC
+    on {
+      column = column.created_at
+      desc   = true
+    }
   }
 }
 
@@ -248,12 +250,12 @@ table "comments" {
   }
   column "created_at" {
     null    = false
-    type    = timestamp
+    type    = timestamptz
     default = sql("CURRENT_TIMESTAMP")
   }
   column "updated_at" {
     null    = false
-    type    = timestamp
+    type    = timestamptz
     default = sql("CURRENT_TIMESTAMP")
   }
   primary_key {

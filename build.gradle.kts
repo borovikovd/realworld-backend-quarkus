@@ -34,7 +34,7 @@ dependencies {
     implementation("io.swagger:swagger-annotations:1.6.15")
     implementation("jakarta.validation:jakarta.validation-api:3.1.0")
 
-    jooqGenerator("org.postgresql:postgresql:42.7.4")
+    jooqGenerator("org.jooq:jooq-meta-extensions:3.19.15")
 
     testImplementation("io.quarkus:quarkus-junit5")
     testImplementation("io.rest-assured:rest-assured")
@@ -111,17 +111,28 @@ jooq {
         create("main") {
             generateSchemaSourceOnCompilation.set(false)
             jooqConfiguration.apply {
-                jdbc.apply {
-                    driver = "org.postgresql.Driver"
-                    url = "jdbc:postgresql://localhost:5432/realworld"
-                    user = "realworld"
-                    password = "realworld"
-                }
                 generator.apply {
                     name = "org.jooq.codegen.KotlinGenerator"
                     database.apply {
-                        name = "org.jooq.meta.postgres.PostgresDatabase"
-                        inputSchema = "public"
+                        name = "org.jooq.meta.extensions.ddl.DDLDatabase"
+                        properties.add(
+                            org.jooq.meta.jaxb.Property().apply {
+                                key = "scripts"
+                                value = "db/migrations/*.sql"
+                            }
+                        )
+                        properties.add(
+                            org.jooq.meta.jaxb.Property().apply {
+                                key = "sort"
+                                value = "semantic"
+                            }
+                        )
+                        properties.add(
+                            org.jooq.meta.jaxb.Property().apply {
+                                key = "defaultNameCase"
+                                value = "lower"
+                            }
+                        )
                     }
                     generate.apply {
                         isDeprecated = false

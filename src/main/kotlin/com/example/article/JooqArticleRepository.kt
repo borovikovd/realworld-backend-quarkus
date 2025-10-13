@@ -1,13 +1,12 @@
 package com.example.article
 
-import com.example.jooq.tables.references.ARTICLES
-import com.example.jooq.tables.references.ARTICLE_TAGS
-import com.example.jooq.tables.references.FAVORITES
-import com.example.jooq.tables.references.TAGS
+import com.example.jooq.public.tables.references.ARTICLES
+import com.example.jooq.public.tables.references.ARTICLE_TAGS
+import com.example.jooq.public.tables.references.FAVORITES
+import com.example.jooq.public.tables.references.TAGS
 import jakarta.enterprise.context.ApplicationScoped
 import jakarta.inject.Inject
 import org.jooq.DSLContext
-import java.time.LocalDateTime
 
 @ApplicationScoped
 class JooqArticleRepository : ArticleRepository {
@@ -176,7 +175,6 @@ class JooqArticleRepository : ArticleRepository {
             .insertInto(FAVORITES)
             .set(FAVORITES.ARTICLE_ID, articleId)
             .set(FAVORITES.USER_ID, userId)
-            .set(FAVORITES.CREATED_AT, LocalDateTime.now())
             .onDuplicateKeyIgnore()
             .execute()
     }

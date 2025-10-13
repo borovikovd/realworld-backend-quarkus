@@ -1,6 +1,6 @@
 package com.example.user
 
-import com.example.jooq.tables.references.USERS
+import com.example.jooq.public.tables.references.USERS
 import jakarta.enterprise.context.ApplicationScoped
 import jakarta.inject.Inject
 import org.jooq.DSLContext

@@ -1,10 +1,9 @@
 package com.example.profile
 
-import com.example.jooq.tables.references.FOLLOWERS
+import com.example.jooq.public.tables.references.FOLLOWERS
 import jakarta.enterprise.context.ApplicationScoped
 import jakarta.inject.Inject
 import org.jooq.DSLContext
-import java.time.LocalDateTime
 
 @ApplicationScoped
 class JooqFollowRepository : FollowRepository {
@@ -19,7 +18,6 @@ class JooqFollowRepository : FollowRepository {
             .insertInto(FOLLOWERS)
             .set(FOLLOWERS.FOLLOWER_ID, followerId)
             .set(FOLLOWERS.FOLLOWEE_ID, followeeId)
-            .set(FOLLOWERS.CREATED_AT, LocalDateTime.now())
             .onDuplicateKeyIgnore()
             .execute()
     }

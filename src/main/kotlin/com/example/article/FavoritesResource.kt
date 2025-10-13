@@ -8,7 +8,6 @@ import jakarta.annotation.security.RolesAllowed
 import jakarta.enterprise.context.ApplicationScoped
 import jakarta.inject.Inject
 import jakarta.ws.rs.core.Response
-import java.time.ZoneOffset
 import com.example.api.model.Article as ArticleDto
 
 @ApplicationScoped
@@ -35,8 +34,8 @@ class FavoritesResource : FavoritesApi {
                         .description(article.description)
                         .body(article.body)
                         .tagList(article.tags.toList())
-                        .createdAt(article.createdAt.atOffset(ZoneOffset.UTC))
-                        .updatedAt(article.updatedAt.atOffset(ZoneOffset.UTC))
+                        .createdAt(article.createdAt)
+                        .updatedAt(article.updatedAt)
                         .favorited(true)
                         .favoritesCount(0)
                         .author(
@@ -66,8 +65,8 @@ class FavoritesResource : FavoritesApi {
                         .description(article.description)
                         .body(article.body)
                         .tagList(article.tags.toList())
-                        .createdAt(article.createdAt.atOffset(ZoneOffset.UTC))
-                        .updatedAt(article.updatedAt.atOffset(ZoneOffset.UTC))
+                        .createdAt(article.createdAt)
+                        .updatedAt(article.updatedAt)
                         .favorited(false)
                         .favoritesCount(0)
                         .author(

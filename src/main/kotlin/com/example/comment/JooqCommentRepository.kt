@@ -1,6 +1,6 @@
 package com.example.comment
 
-import com.example.jooq.tables.references.COMMENTS
+import com.example.jooq.public.tables.references.COMMENTS
 import jakarta.enterprise.context.ApplicationScoped
 import jakarta.inject.Inject
 import org.jooq.DSLContext
