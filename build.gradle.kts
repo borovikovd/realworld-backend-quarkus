@@ -4,7 +4,7 @@ plugins {
     id("io.quarkus")
     id("org.openapi.generator") version "7.16.0"
     id("org.jlleitschuh.gradle.ktlint") version "13.1.0"
-    id("nu.studer.jooq") version "9.0"
+    id("nu.studer.jooq") version "10.1.1"
 }
 
 repositories {
@@ -106,7 +106,7 @@ tasks.withType<org.jlleitschuh.gradle.ktlint.tasks.BaseKtLintCheckTask> {
 }
 
 jooq {
-    version.set("3.19.15")
+    version.set("3.20.8")
     configurations {
         create("main") {
             generateSchemaSourceOnCompilation.set(false)
