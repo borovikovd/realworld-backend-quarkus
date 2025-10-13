@@ -10,4 +10,4 @@ pluginManagement {
         id(quarkusPluginId) version quarkusPluginVersion
     }
 }
-rootProject.name="realworld-api"
+rootProject.name = "realworld-api"

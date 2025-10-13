@@ -16,8 +16,8 @@
 2. Compile (`gradle compileKotlin`)
 3. Run focused tests (specific test class)
 4. Run related tests (package/aggregate)
-5. Run linter (`gradle ktlintCheck`, fix with `ktlintFormat`)
-6. Full verification before commit (`gradle test && gradle build`)
+5. Full build verification (`gradle build` - includes compilation, tests, and linting)
+6. Auto-fix code style if needed (`gradle ktlintFormat`)
 
 ## Dependency Management
 
@@ -267,14 +267,12 @@ gradle build -Dquarkus.package.type=native
 
 ## Pre-Commit Checklist
 
-- [ ] Code compiles
+- [ ] Code compiles (`gradle compileKotlin`)
 - [ ] New tests written and passing
 - [ ] Related tests pass (package/aggregate)
-- [ ] All tests pass (`gradle test`)
-- [ ] Linter passes (`gradle ktlintCheck`)
-- [ ] Full build succeeds (`gradle build`)
-- [ ] No generated code committed
-- [ ] No secrets committed
+- [ ] Full build succeeds (`gradle build` - includes tests and linting)
+- [ ] No generated code committed (build/, .gradle/)
+- [ ] No secrets committed (.env, credentials, etc.)
 
 ## Documentation
 
