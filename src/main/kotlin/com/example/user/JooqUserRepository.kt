@@ -29,7 +29,7 @@ class JooqUserRepository : UserRepository {
                 .set(USERS.CREATED_AT, user.createdAt)
                 .set(USERS.UPDATED_AT, user.updatedAt)
                 .returning()
-                .fetchOne() ?: throw IllegalStateException("Failed to insert user")
+                .fetchOne() ?: error("Failed to insert user")
 
         return User.reconstitute(
             id = record.id!!,

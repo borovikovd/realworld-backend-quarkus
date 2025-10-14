@@ -23,9 +23,7 @@ class ProfileService {
             userRepository.findByUsername(username)
                 ?: throw NotFoundException("User not found")
 
-        if (followee.id == followerId) {
-            throw IllegalArgumentException("Cannot follow yourself")
-        }
+        require(followee.id != followerId) { "Cannot follow yourself" }
 
         followRepository.follow(followerId, followee.id!!)
     }

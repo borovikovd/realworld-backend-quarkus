@@ -27,7 +27,7 @@ class JooqCommentRepository : CommentRepository {
                 .set(COMMENTS.CREATED_AT, comment.createdAt)
                 .set(COMMENTS.UPDATED_AT, comment.updatedAt)
                 .returning()
-                .fetchOne() ?: throw IllegalStateException("Failed to insert comment")
+                .fetchOne() ?: error("Failed to insert comment")
 
         return Comment.reconstitute(
             id = record.id!!,

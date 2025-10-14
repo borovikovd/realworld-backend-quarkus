@@ -32,7 +32,7 @@ class JooqArticleRepository : ArticleRepository {
                 .set(ARTICLES.CREATED_AT, article.createdAt)
                 .set(ARTICLES.UPDATED_AT, article.updatedAt)
                 .returning()
-                .fetchOne() ?: throw IllegalStateException("Failed to insert article")
+                .fetchOne() ?: error("Failed to insert article")
 
         val articleId = record.id!!
 

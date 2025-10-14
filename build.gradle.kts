@@ -178,6 +178,7 @@ ktlint {
 detekt {
     buildUponDefaultConfig = true
     allRules = false
+    config.setFrom("$rootDir/detekt.yml")
     parallel = true
     source.setFrom(
         "src/main/kotlin",

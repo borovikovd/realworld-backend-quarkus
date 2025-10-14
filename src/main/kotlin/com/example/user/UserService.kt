@@ -19,6 +19,10 @@ class UserService {
     @Inject
     lateinit var jwtService: JwtService
 
+    companion object {
+        private const val MIN_PASSWORD_LENGTH = 8
+    }
+
     @Transactional
     fun register(
         email: String,
@@ -35,8 +39,8 @@ class UserService {
             errors["username"] = listOf("is already taken")
         }
 
-        if (password.length < 8) {
-            errors["password"] = listOf("must be at least 8 characters")
+        if (password.length < MIN_PASSWORD_LENGTH) {
+            errors["password"] = listOf("must be at least $MIN_PASSWORD_LENGTH characters")
         }
 
         if (errors.isNotEmpty()) {
@@ -96,8 +100,8 @@ class UserService {
         }
 
         password?.let {
-            if (it.length < 8) {
-                errors["password"] = listOf("must be at least 8 characters")
+            if (it.length < MIN_PASSWORD_LENGTH) {
+                errors["password"] = listOf("must be at least $MIN_PASSWORD_LENGTH characters")
             }
         }
 

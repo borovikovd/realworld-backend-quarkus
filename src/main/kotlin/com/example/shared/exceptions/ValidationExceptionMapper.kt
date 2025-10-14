@@ -6,9 +6,13 @@ import jakarta.ws.rs.ext.Provider
 
 @Provider
 class ValidationExceptionMapper : ExceptionMapper<ValidationException> {
+    companion object {
+        private const val HTTP_UNPROCESSABLE_ENTITY = 422
+    }
+
     override fun toResponse(exception: ValidationException): Response =
         Response
-            .status(422)
+            .status(HTTP_UNPROCESSABLE_ENTITY)
             .entity(mapOf("errors" to exception.errors))
             .build()
 }
