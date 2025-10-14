@@ -7,6 +7,7 @@ plugins {
     id("io.quarkus")
     id("org.openapi.generator") version "7.16.0"
     id("org.jlleitschuh.gradle.ktlint") version "13.1.0"
+    id("io.gitlab.arturbosch.detekt") version "1.23.8"
     id("nu.studer.jooq") version "10.1.1"
 }
 
@@ -166,11 +167,21 @@ jooq {
     }
 }
 
-// ktlint
+// ktlint (code formatting)
 ktlint {
     version = "1.5.0"
     android = false
     ignoreFailures = false
+}
+
+// Detekt (static analysis - complexity, code smells, potential bugs)
+detekt {
+    buildUponDefaultConfig = true
+    allRules = false
+    parallel = true
+    source.setFrom(
+        "src/main/kotlin",
+    )
 }
 
 // ============================================
@@ -190,7 +201,7 @@ tasks.named("compileKotlin") {
     dependsOn("openApiGenerate", "generateJooq")
 }
 
-// Ensure ktlint runs after code generation and only checks source code
+// Ensure ktlint only checks source code, not generated code
 tasks.withType<org.jlleitschuh.gradle.ktlint.tasks.BaseKtLintCheckTask> {
     mustRunAfter("generateJooq", "openApiGenerate")
     setSource(fileTree("src/main/kotlin"))
