@@ -1,21 +1,27 @@
 package com.example.article
 
+import com.example.shared.domain.Entity
 import com.example.shared.exceptions.ForbiddenException
-import com.example.shared.exceptions.ValidationException
 import com.example.shared.utils.SlugUtils
 import java.time.OffsetDateTime
 
-class Article private constructor(
-    var id: Long?,
+data class Article(
+    override val id: Long? = null,
     val slug: String,
-    var title: String,
-    var description: String,
-    var body: String,
+    val title: String,
+    val description: String,
+    val body: String,
     val authorId: Long,
-    val tags: MutableSet<String>,
-    val createdAt: OffsetDateTime,
-    var updatedAt: OffsetDateTime,
-) {
+    val tags: Set<String> = emptySet(),
+    val createdAt: OffsetDateTime = OffsetDateTime.now(),
+    val updatedAt: OffsetDateTime = OffsetDateTime.now(),
+) : Entity<Long> {
+    init {
+        require(title.isNotBlank()) { "Title must not be blank" }
+        require(description.isNotBlank()) { "Description must not be blank" }
+        require(body.isNotBlank()) { "Body must not be blank" }
+    }
+
     companion object {
         fun create(
             title: String,
@@ -24,101 +30,40 @@ class Article private constructor(
             authorId: Long,
             tags: List<String>,
         ): Article {
-            validate(title, description, body)
-
-            val now = OffsetDateTime.now()
             val slug = SlugUtils.toSlug(title)
-
             return Article(
-                id = null,
                 slug = slug,
                 title = title,
                 description = description,
                 body = body,
                 authorId = authorId,
-                tags = tags.toMutableSet(),
-                createdAt = now,
-                updatedAt = now,
+                tags = tags.toSet(),
             )
-        }
-
-        fun reconstitute(
-            id: Long,
-            slug: String,
-            title: String,
-            description: String,
-            body: String,
-            authorId: Long,
-            tags: Set<String>,
-            createdAt: OffsetDateTime,
-            updatedAt: OffsetDateTime,
-        ): Article =
-            Article(
-                id,
-                slug,
-                title,
-                description,
-                body,
-                authorId,
-                tags.toMutableSet(),
-                createdAt,
-                updatedAt,
-            )
-
-        private fun validate(
-            title: String,
-            description: String,
-            body: String,
-        ) {
-            val errors = mutableMapOf<String, List<String>>()
-
-            if (title.isBlank()) {
-                errors["title"] = listOf("must not be blank")
-            }
-
-            if (description.isBlank()) {
-                errors["description"] = listOf("must not be blank")
-            }
-
-            if (body.isBlank()) {
-                errors["body"] = listOf("must not be blank")
-            }
-
-            if (errors.isNotEmpty()) {
-                throw ValidationException(errors)
-            }
         }
     }
+
+    override fun withId(newId: Long): Article = copy(id = newId)
 
     fun update(
         userId: Long,
         title: String?,
         description: String?,
         body: String?,
-    ) {
+    ): Article {
         if (userId != authorId) {
             throw ForbiddenException("You can only update your own articles")
         }
 
-        title?.let {
-            if (it.isNotBlank()) {
-                this.title = it
-            }
-        }
+        val updatedTitle = if (title != null && title.isNotBlank()) title else this.title
+        val updatedDescription = if (description != null && description.isNotBlank()) description else this.description
+        val updatedBody = if (body != null && body.isNotBlank()) body else this.body
 
-        description?.let {
-            if (it.isNotBlank()) {
-                this.description = it
-            }
-        }
-
-        body?.let {
-            if (it.isNotBlank()) {
-                this.body = it
-            }
-        }
-
-        this.updatedAt = OffsetDateTime.now()
+        return copy(
+            title = updatedTitle,
+            description = updatedDescription,
+            body = updatedBody,
+            updatedAt = OffsetDateTime.now(),
+        )
     }
 
     fun canBeDeletedBy(userId: Long): Boolean = userId == authorId

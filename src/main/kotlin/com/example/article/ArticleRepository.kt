@@ -1,10 +1,8 @@
 package com.example.article
 
-interface ArticleRepository {
-    fun save(article: Article): Article
+import com.example.shared.domain.Repository
 
-    fun findById(id: Long): Article?
-
+interface ArticleRepository : Repository<Article, Long> {
     fun findBySlug(slug: String): Article?
 
     fun deleteById(id: Long)

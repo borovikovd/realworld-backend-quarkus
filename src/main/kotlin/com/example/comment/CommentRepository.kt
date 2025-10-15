@@ -1,10 +1,8 @@
 package com.example.comment
 
-interface CommentRepository {
-    fun save(comment: Comment): Comment
+import com.example.shared.domain.Repository
 
-    fun findById(id: Long): Comment?
-
+interface CommentRepository : Repository<Comment, Long> {
     fun findByArticleId(articleId: Long): List<Comment>
 
     fun deleteById(id: Long)

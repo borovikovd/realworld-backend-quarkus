@@ -27,7 +27,7 @@ class ArticleService {
                 authorId = userId,
                 tags = tags,
             )
-        return articleRepository.save(article)
+        return articleRepository.create(article)
     }
 
     @Transactional
@@ -42,8 +42,8 @@ class ArticleService {
             articleRepository.findBySlug(slug)
                 ?: throw NotFoundException("Article not found")
 
-        article.update(userId, title, description, body)
-        return articleRepository.save(article)
+        val updatedArticle = article.update(userId, title, description, body)
+        return articleRepository.update(updatedArticle)
     }
 
     @Transactional

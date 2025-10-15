@@ -10,51 +10,41 @@ class JooqUserRepository : UserRepository {
     @Inject
     lateinit var dsl: DSLContext
 
-    override fun save(user: User): User =
-        if (user.id == null) {
-            insert(user)
-        } else {
-            update(user)
-        }
+    override fun create(entity: User): User {
+        require(entity.id == null) { "Cannot create entity with existing ID" }
 
-    private fun insert(user: User): User {
-        val record =
+        val id =
             dsl
                 .insertInto(USERS)
-                .set(USERS.EMAIL, user.email)
-                .set(USERS.USERNAME, user.username)
-                .set(USERS.PASSWORD_HASH, user.passwordHash)
-                .set(USERS.BIO, user.bio)
-                .set(USERS.IMAGE, user.image)
-                .set(USERS.CREATED_AT, user.createdAt)
-                .set(USERS.UPDATED_AT, user.updatedAt)
-                .returning()
-                .fetchOne() ?: error("Failed to insert user")
+                .set(USERS.EMAIL, entity.email)
+                .set(USERS.USERNAME, entity.username)
+                .set(USERS.PASSWORD_HASH, entity.passwordHash)
+                .set(USERS.BIO, entity.bio)
+                .set(USERS.IMAGE, entity.image)
+                .set(USERS.CREATED_AT, entity.createdAt)
+                .set(USERS.UPDATED_AT, entity.updatedAt)
+                .returningResult(USERS.ID)
+                .fetchOne()
+                ?.value1() ?: error("Failed to insert user")
 
-        return User.reconstitute(
-            id = record.id!!,
-            email = record.email!!,
-            username = record.username!!,
-            passwordHash = record.passwordHash!!,
-            bio = record.bio,
-            image = record.image,
-            createdAt = record.createdAt!!,
-            updatedAt = record.updatedAt!!,
-        )
+        return entity.withId(id)
     }
 
-    private fun update(user: User): User {
+    override fun update(entity: User): User {
+        requireNotNull(entity.id) { "Cannot update entity without ID" }
+
         dsl
             .update(USERS)
-            .set(USERS.EMAIL, user.email)
-            .set(USERS.USERNAME, user.username)
-            .set(USERS.PASSWORD_HASH, user.passwordHash)
-            .set(USERS.BIO, user.bio)
-            .set(USERS.IMAGE, user.image)
-            .set(USERS.UPDATED_AT, user.updatedAt)
-            .where(USERS.ID.eq(user.id))
+            .set(USERS.EMAIL, entity.email)
+            .set(USERS.USERNAME, entity.username)
+            .set(USERS.PASSWORD_HASH, entity.passwordHash)
+            .set(USERS.BIO, entity.bio)
+            .set(USERS.IMAGE, entity.image)
+            .set(USERS.UPDATED_AT, entity.updatedAt)
+            .where(USERS.ID.eq(entity.id))
             .execute()
-        return user
+
+        return entity
     }
 
     override fun findById(id: Long): User? {
@@ -64,8 +54,8 @@ class JooqUserRepository : UserRepository {
                 .where(USERS.ID.eq(id))
                 .fetchOne() ?: return null
 
-        return User.reconstitute(
-            id = record.id!!,
+        return User(
+            id = record.id,
             email = record.email!!,
             username = record.username!!,
             passwordHash = record.passwordHash!!,
@@ -83,8 +73,8 @@ class JooqUserRepository : UserRepository {
                 .where(USERS.EMAIL.eq(email))
                 .fetchOne() ?: return null
 
-        return User.reconstitute(
-            id = record.id!!,
+        return User(
+            id = record.id,
             email = record.email!!,
             username = record.username!!,
             passwordHash = record.passwordHash!!,
@@ -102,8 +92,8 @@ class JooqUserRepository : UserRepository {
                 .where(USERS.USERNAME.eq(username))
                 .fetchOne() ?: return null
 
-        return User.reconstitute(
-            id = record.id!!,
+        return User(
+            id = record.id,
             email = record.email!!,
             username = record.username!!,
             passwordHash = record.passwordHash!!,

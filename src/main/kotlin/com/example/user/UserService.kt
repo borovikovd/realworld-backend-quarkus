@@ -48,8 +48,8 @@ class UserService {
         }
 
         val passwordHash = passwordHasher.hash(password)
-        val user = User.create(email, username, passwordHash)
-        val savedUser = userRepository.save(user)
+        val user = User(email = email, username = username, passwordHash = passwordHash)
+        val savedUser = userRepository.create(user)
         val token = jwtService.generateToken(savedUser.id!!, savedUser.email, savedUser.username)
 
         return Pair(savedUser, token)
@@ -109,14 +109,14 @@ class UserService {
             throw ValidationException(errors)
         }
 
-        user.updateProfile(email, username, bio, image)
+        var updatedUser = user.updateProfile(email, username, bio, image)
 
         password?.let {
             val newPasswordHash = passwordHasher.hash(it)
-            user.updatePassword(newPasswordHash)
+            updatedUser = updatedUser.updatePassword(newPasswordHash)
         }
 
-        val updatedUser = userRepository.save(user)
+        updatedUser = userRepository.update(updatedUser)
         val token = jwtService.generateToken(updatedUser.id!!, updatedUser.email, updatedUser.username)
 
         return Pair(updatedUser, token)

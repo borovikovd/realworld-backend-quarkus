@@ -1,10 +1,8 @@
 package com.example.user
 
-interface UserRepository {
-    fun save(user: User): User
+import com.example.shared.domain.Repository
 
-    fun findById(id: Long): User?
-
+interface UserRepository : Repository<User, Long> {
     fun findByEmail(email: String): User?
 
     fun findByUsername(username: String): User?

@@ -13,62 +13,48 @@ class JooqArticleRepository : ArticleRepository {
     @Inject
     lateinit var dsl: DSLContext
 
-    override fun save(article: Article): Article =
-        if (article.id == null) {
-            insert(article)
-        } else {
-            update(article)
-        }
+    override fun create(entity: Article): Article {
+        require(entity.id == null) { "Cannot create entity with existing ID" }
 
-    private fun insert(article: Article): Article {
-        val record =
+        val id =
             dsl
                 .insertInto(ARTICLES)
-                .set(ARTICLES.SLUG, article.slug)
-                .set(ARTICLES.TITLE, article.title)
-                .set(ARTICLES.DESCRIPTION, article.description)
-                .set(ARTICLES.BODY, article.body)
-                .set(ARTICLES.AUTHOR_ID, article.authorId)
-                .set(ARTICLES.CREATED_AT, article.createdAt)
-                .set(ARTICLES.UPDATED_AT, article.updatedAt)
-                .returning()
-                .fetchOne() ?: error("Failed to insert article")
+                .set(ARTICLES.SLUG, entity.slug)
+                .set(ARTICLES.TITLE, entity.title)
+                .set(ARTICLES.DESCRIPTION, entity.description)
+                .set(ARTICLES.BODY, entity.body)
+                .set(ARTICLES.AUTHOR_ID, entity.authorId)
+                .set(ARTICLES.CREATED_AT, entity.createdAt)
+                .set(ARTICLES.UPDATED_AT, entity.updatedAt)
+                .returningResult(ARTICLES.ID)
+                .fetchOne()
+                ?.value1() ?: error("Failed to insert article")
 
-        val articleId = record.id!!
+        saveTags(id, entity.tags)
 
-        saveTags(articleId, article.tags)
-
-        return Article.reconstitute(
-            id = articleId,
-            slug = record.slug!!,
-            title = record.title!!,
-            description = record.description!!,
-            body = record.body!!,
-            authorId = record.authorId!!,
-            tags = article.tags,
-            createdAt = record.createdAt!!,
-            updatedAt = record.updatedAt!!,
-        )
+        return entity.withId(id)
     }
 
-    private fun update(article: Article): Article {
+    override fun update(entity: Article): Article {
+        requireNotNull(entity.id) { "Cannot update entity without ID" }
+
         dsl
             .update(ARTICLES)
-            .set(ARTICLES.TITLE, article.title)
-            .set(ARTICLES.DESCRIPTION, article.description)
-            .set(ARTICLES.BODY, article.body)
-            .set(ARTICLES.UPDATED_AT, article.updatedAt)
-            .where(ARTICLES.ID.eq(article.id))
+            .set(ARTICLES.TITLE, entity.title)
+            .set(ARTICLES.DESCRIPTION, entity.description)
+            .set(ARTICLES.BODY, entity.body)
+            .set(ARTICLES.UPDATED_AT, entity.updatedAt)
+            .where(ARTICLES.ID.eq(entity.id))
             .execute()
 
         dsl
             .deleteFrom(ARTICLE_TAGS)
-            .where(ARTICLE_TAGS.ARTICLE_ID.eq(article.id))
+            .where(ARTICLE_TAGS.ARTICLE_ID.eq(entity.id))
             .execute()
 
-        saveTags(article.id!!, article.tags)
+        saveTags(entity.id, entity.tags)
 
-        return article
+        return entity
     }
 
     private fun saveTags(
@@ -104,8 +90,8 @@ class JooqArticleRepository : ArticleRepository {
 
         val tags = loadTags(id)
 
-        return Article.reconstitute(
-            id = record.id!!,
+        return Article(
+            id = record.id,
             slug = record.slug!!,
             title = record.title!!,
             description = record.description!!,
@@ -126,8 +112,8 @@ class JooqArticleRepository : ArticleRepository {
 
         val tags = loadTags(record.id!!)
 
-        return Article.reconstitute(
-            id = record.id!!,
+        return Article(
+            id = record.id,
             slug = record.slug!!,
             title = record.title!!,
             description = record.description!!,

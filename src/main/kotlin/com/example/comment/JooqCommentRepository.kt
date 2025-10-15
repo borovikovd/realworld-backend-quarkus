@@ -10,43 +10,35 @@ class JooqCommentRepository : CommentRepository {
     @Inject
     lateinit var dsl: DSLContext
 
-    override fun save(comment: Comment): Comment =
-        if (comment.id == null) {
-            insert(comment)
-        } else {
-            update(comment)
-        }
+    override fun create(entity: Comment): Comment {
+        require(entity.id == null) { "Cannot create entity with existing ID" }
 
-    private fun insert(comment: Comment): Comment {
-        val record =
+        val id =
             dsl
                 .insertInto(COMMENTS)
-                .set(COMMENTS.ARTICLE_ID, comment.articleId)
-                .set(COMMENTS.AUTHOR_ID, comment.authorId)
-                .set(COMMENTS.BODY, comment.body)
-                .set(COMMENTS.CREATED_AT, comment.createdAt)
-                .set(COMMENTS.UPDATED_AT, comment.updatedAt)
-                .returning()
-                .fetchOne() ?: error("Failed to insert comment")
+                .set(COMMENTS.ARTICLE_ID, entity.articleId)
+                .set(COMMENTS.AUTHOR_ID, entity.authorId)
+                .set(COMMENTS.BODY, entity.body)
+                .set(COMMENTS.CREATED_AT, entity.createdAt)
+                .set(COMMENTS.UPDATED_AT, entity.updatedAt)
+                .returningResult(COMMENTS.ID)
+                .fetchOne()
+                ?.value1() ?: error("Failed to insert comment")
 
-        return Comment.reconstitute(
-            id = record.id!!,
-            articleId = record.articleId!!,
-            authorId = record.authorId!!,
-            body = record.body!!,
-            createdAt = record.createdAt!!,
-            updatedAt = record.updatedAt!!,
-        )
+        return entity.withId(id)
     }
 
-    private fun update(comment: Comment): Comment {
+    override fun update(entity: Comment): Comment {
+        requireNotNull(entity.id) { "Cannot update entity without ID" }
+
         dsl
             .update(COMMENTS)
-            .set(COMMENTS.BODY, comment.body)
-            .set(COMMENTS.UPDATED_AT, comment.updatedAt)
-            .where(COMMENTS.ID.eq(comment.id))
+            .set(COMMENTS.BODY, entity.body)
+            .set(COMMENTS.UPDATED_AT, entity.updatedAt)
+            .where(COMMENTS.ID.eq(entity.id))
             .execute()
-        return comment
+
+        return entity
     }
 
     override fun findById(id: Long): Comment? {
@@ -56,8 +48,8 @@ class JooqCommentRepository : CommentRepository {
                 .where(COMMENTS.ID.eq(id))
                 .fetchOne() ?: return null
 
-        return Comment.reconstitute(
-            id = record.id!!,
+        return Comment(
+            id = record.id,
             articleId = record.articleId!!,
             authorId = record.authorId!!,
             body = record.body!!,
@@ -73,8 +65,8 @@ class JooqCommentRepository : CommentRepository {
             .orderBy(COMMENTS.CREATED_AT.desc())
             .fetch()
             .map {
-                Comment.reconstitute(
-                    id = it.id!!,
+                Comment(
+                    id = it.id,
                     articleId = it.articleId!!,
                     authorId = it.authorId!!,
                     body = it.body!!,

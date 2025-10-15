@@ -25,12 +25,12 @@ class CommentService {
                 ?: throw NotFoundException("Article not found")
 
         val comment =
-            Comment.create(
+            Comment(
                 articleId = article.id!!,
                 authorId = userId,
                 body = body,
             )
-        return commentRepository.save(comment)
+        return commentRepository.create(comment)
     }
 
     fun getComments(articleSlug: String): List<Comment> {
