@@ -1,4 +1,4 @@
-package com.example.profile
+package com.example.user
 
 interface FollowRepository {
     fun follow(

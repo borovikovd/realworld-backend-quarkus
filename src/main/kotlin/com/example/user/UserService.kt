@@ -1,5 +1,6 @@
 package com.example.user
 
+import com.example.shared.exceptions.NotFoundException
 import com.example.shared.exceptions.UnauthorizedException
 import com.example.shared.exceptions.ValidationException
 import com.example.shared.security.PasswordHasher
@@ -11,6 +12,9 @@ import jakarta.transaction.Transactional
 class UserService {
     @Inject
     lateinit var userRepository: UserRepository
+
+    @Inject
+    lateinit var followRepository: FollowRepository
 
     @Inject
     lateinit var passwordHasher: PasswordHasher
@@ -113,4 +117,30 @@ class UserService {
     fun getCurrentUser(userId: Long): User =
         userRepository.findById(userId)
             ?: throw UnauthorizedException("User not found")
+
+    @Transactional
+    fun followUser(
+        followerId: Long,
+        username: String,
+    ) {
+        val followee =
+            userRepository.findByUsername(username)
+                ?: throw NotFoundException("User not found")
+
+        require(followee.id != followerId) { "Cannot follow yourself" }
+
+        followRepository.follow(followerId, followee.id!!)
+    }
+
+    @Transactional
+    fun unfollowUser(
+        followerId: Long,
+        username: String,
+    ) {
+        val followee =
+            userRepository.findByUsername(username)
+                ?: throw NotFoundException("User not found")
+
+        followRepository.unfollow(followerId, followee.id!!)
+    }
 }

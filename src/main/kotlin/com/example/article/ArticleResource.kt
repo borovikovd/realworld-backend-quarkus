@@ -1,6 +1,7 @@
 package com.example.article
 
 import com.example.api.ArticlesApi
+import com.example.api.FavoritesApi
 import com.example.api.model.CreateArticle201Response
 import com.example.api.model.CreateArticleRequest
 import com.example.api.model.GetArticlesFeed200Response
@@ -12,7 +13,9 @@ import jakarta.inject.Inject
 import jakarta.ws.rs.core.Response
 
 @ApplicationScoped
-class ArticleResource : ArticlesApi {
+class ArticleResource :
+    ArticlesApi,
+    FavoritesApi {
     @Inject
     lateinit var articleService: ArticleService
 
@@ -105,6 +108,30 @@ class ArticleResource : ArticlesApi {
             )
 
         val articleDto = articleQueryService.getArticleBySlug(updated.slug, userId)
+
+        return Response
+            .ok(CreateArticle201Response().article(articleDto))
+            .build()
+    }
+
+    @RolesAllowed("**")
+    override fun createArticleFavorite(slug: String): Response {
+        val userId = securityContext.currentUserId!!
+        articleService.favoriteArticle(userId, slug)
+
+        val articleDto = articleQueryService.getArticleBySlug(slug, userId)
+
+        return Response
+            .ok(CreateArticle201Response().article(articleDto))
+            .build()
+    }
+
+    @RolesAllowed("**")
+    override fun deleteArticleFavorite(slug: String): Response {
+        val userId = securityContext.currentUserId!!
+        articleService.unfavoriteArticle(userId, slug)
+
+        val articleDto = articleQueryService.getArticleBySlug(slug, userId)
 
         return Response
             .ok(CreateArticle201Response().article(articleDto))

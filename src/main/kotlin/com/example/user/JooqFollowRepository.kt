@@ -1,4 +1,4 @@
-package com.example.profile
+package com.example.user
 
 import com.example.jooq.public.tables.references.FOLLOWERS
 import jakarta.enterprise.context.ApplicationScoped
