@@ -1,4 +1,4 @@
-package com.example.user
+package com.example.profile
 
 import com.example.api.model.Profile
 import com.example.jooq.public.tables.references.FOLLOWERS
@@ -11,7 +11,7 @@ import org.jooq.impl.DSL.count
 import org.jooq.impl.DSL.select
 
 @ApplicationScoped
-class UserQueryService {
+class ProfileQueryService {
     @Inject
     lateinit var dsl: DSLContext
 
