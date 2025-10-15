@@ -3,7 +3,7 @@ package com.example.profile
 import com.example.api.ProfileApi
 import com.example.api.model.GetProfileByUsername200Response
 import com.example.shared.security.SecurityContext
-import com.example.user.ProfileQueryService
+import com.example.user.UserQueryService
 import jakarta.annotation.security.RolesAllowed
 import jakarta.enterprise.context.ApplicationScoped
 import jakarta.inject.Inject
@@ -15,14 +15,14 @@ class ProfileResource : ProfileApi {
     lateinit var profileService: ProfileService
 
     @Inject
-    lateinit var profileQueryService: ProfileQueryService
+    lateinit var userQueryService: UserQueryService
 
     @Inject
     lateinit var securityContext: SecurityContext
 
     override fun getProfileByUsername(username: String): Response {
         val viewerId = securityContext.currentUserId
-        val profile = profileQueryService.getProfileByUsername(username, viewerId)
+        val profile = userQueryService.getProfileByUsername(username, viewerId)
 
         return Response
             .ok(GetProfileByUsername200Response().profile(profile))
@@ -34,7 +34,7 @@ class ProfileResource : ProfileApi {
         val currentUserId = securityContext.currentUserId!!
         profileService.followUser(currentUserId, username)
 
-        val profile = profileQueryService.getProfileByUsername(username, currentUserId)
+        val profile = userQueryService.getProfileByUsername(username, currentUserId)
         return Response
             .ok(GetProfileByUsername200Response().profile(profile))
             .build()
@@ -45,7 +45,7 @@ class ProfileResource : ProfileApi {
         val currentUserId = securityContext.currentUserId!!
         profileService.unfollowUser(currentUserId, username)
 
-        val profile = profileQueryService.getProfileByUsername(username, currentUserId)
+        val profile = userQueryService.getProfileByUsername(username, currentUserId)
         return Response
             .ok(GetProfileByUsername200Response().profile(profile))
             .build()
