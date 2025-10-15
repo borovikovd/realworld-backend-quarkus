@@ -2,7 +2,6 @@ package com.example.user
 
 import com.example.shared.exceptions.UnauthorizedException
 import com.example.shared.exceptions.ValidationException
-import com.example.shared.security.JwtService
 import com.example.shared.security.PasswordHasher
 import jakarta.enterprise.context.ApplicationScoped
 import jakarta.inject.Inject
@@ -16,9 +15,6 @@ class UserService {
     @Inject
     lateinit var passwordHasher: PasswordHasher
 
-    @Inject
-    lateinit var jwtService: JwtService
-
     companion object {
         private const val MIN_PASSWORD_LENGTH = 8
     }
@@ -28,7 +24,7 @@ class UserService {
         email: String,
         username: String,
         password: String,
-    ): Pair<User, String> {
+    ): User {
         val errors = mutableMapOf<String, List<String>>()
 
         if (userRepository.existsByEmail(email)) {
@@ -49,17 +45,13 @@ class UserService {
 
         val passwordHash = passwordHasher.hash(password)
         val user = User(email = email, username = username, passwordHash = passwordHash)
-        val savedUser = userRepository.create(user)
-        val token = jwtService.generateToken(savedUser.id!!, savedUser.email, savedUser.username)
-
-        return Pair(savedUser, token)
+        return userRepository.create(user)
     }
 
-    @Transactional
     fun login(
         email: String,
         password: String,
-    ): Pair<User, String> {
+    ): User {
         val user =
             userRepository.findByEmail(email)
                 ?: throw UnauthorizedException("Invalid email or password")
@@ -68,8 +60,7 @@ class UserService {
             throw UnauthorizedException("Invalid email or password")
         }
 
-        val token = jwtService.generateToken(user.id!!, user.email, user.username)
-        return Pair(user, token)
+        return user
     }
 
     @Transactional
@@ -80,7 +71,7 @@ class UserService {
         password: String?,
         bio: String?,
         image: String?,
-    ): Pair<User, String> {
+    ): User {
         val user =
             userRepository.findById(userId)
                 ?: throw UnauthorizedException("User not found")
@@ -116,10 +107,7 @@ class UserService {
             updatedUser = updatedUser.updatePassword(newPasswordHash)
         }
 
-        updatedUser = userRepository.update(updatedUser)
-        val token = jwtService.generateToken(updatedUser.id!!, updatedUser.email, updatedUser.username)
-
-        return Pair(updatedUser, token)
+        return userRepository.update(updatedUser)
     }
 
     fun getCurrentUser(userId: Long): User =

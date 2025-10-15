@@ -4,19 +4,20 @@ import com.example.api.ArticlesApi
 import com.example.api.model.CreateArticle201Response
 import com.example.api.model.CreateArticleRequest
 import com.example.api.model.GetArticlesFeed200Response
-import com.example.api.model.Profile
 import com.example.api.model.UpdateArticleRequest
 import com.example.shared.security.SecurityContext
 import jakarta.annotation.security.RolesAllowed
 import jakarta.enterprise.context.ApplicationScoped
 import jakarta.inject.Inject
 import jakarta.ws.rs.core.Response
-import com.example.api.model.Article as ArticleDto
 
 @ApplicationScoped
 class ArticleResource : ArticlesApi {
     @Inject
     lateinit var articleService: ArticleService
+
+    @Inject
+    lateinit var articleQueryService: ArticleQueryService
 
     @Inject
     lateinit var securityContext: SecurityContext
@@ -35,29 +36,12 @@ class ArticleResource : ArticlesApi {
                 tags = newArticle.tagList ?: emptyList(),
             )
 
+        val articleDto = articleQueryService.getArticleBySlug(created.slug, userId)
+
         return Response
             .status(Response.Status.CREATED)
-            .entity(
-                CreateArticle201Response().article(
-                    ArticleDto()
-                        .slug(created.slug)
-                        .title(created.title)
-                        .description(created.description)
-                        .body(created.body)
-                        .tagList(created.tags.toList())
-                        .createdAt(created.createdAt)
-                        .updatedAt(created.updatedAt)
-                        .favorited(false)
-                        .favoritesCount(0)
-                        .author(
-                            Profile()
-                                .username("")
-                                .bio(null)
-                                .image(null)
-                                .following(false),
-                        ),
-                ),
-            ).build()
+            .entity(CreateArticle201Response().article(articleDto))
+            .build()
     }
 
     @RolesAllowed("**")
@@ -69,30 +53,12 @@ class ArticleResource : ArticlesApi {
     }
 
     override fun getArticle(slug: String): Response {
-        val article = articleService.getArticle(slug)
+        val viewerId = securityContext.currentUserId
+        val articleDto = articleQueryService.getArticleBySlug(slug, viewerId)
 
         return Response
-            .ok(
-                CreateArticle201Response().article(
-                    ArticleDto()
-                        .slug(article.slug)
-                        .title(article.title)
-                        .description(article.description)
-                        .body(article.body)
-                        .tagList(article.tags.toList())
-                        .createdAt(article.createdAt)
-                        .updatedAt(article.updatedAt)
-                        .favorited(false)
-                        .favoritesCount(0)
-                        .author(
-                            Profile()
-                                .username("")
-                                .bio(null)
-                                .image(null)
-                                .following(false),
-                        ),
-                ),
-            ).build()
+            .ok(CreateArticle201Response().article(articleDto))
+            .build()
     }
 
     override fun getArticles(
@@ -138,27 +104,10 @@ class ArticleResource : ArticlesApi {
                 body = updateData.body,
             )
 
+        val articleDto = articleQueryService.getArticleBySlug(updated.slug, userId)
+
         return Response
-            .ok(
-                CreateArticle201Response().article(
-                    ArticleDto()
-                        .slug(updated.slug)
-                        .title(updated.title)
-                        .description(updated.description)
-                        .body(updated.body)
-                        .tagList(updated.tags.toList())
-                        .createdAt(updated.createdAt)
-                        .updatedAt(updated.updatedAt)
-                        .favorited(false)
-                        .favoritesCount(0)
-                        .author(
-                            Profile()
-                                .username("")
-                                .bio(null)
-                                .image(null)
-                                .following(false),
-                        ),
-                ),
-            ).build()
+            .ok(CreateArticle201Response().article(articleDto))
+            .build()
     }
 }
