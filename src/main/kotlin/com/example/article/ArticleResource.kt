@@ -70,25 +70,46 @@ class ArticleResource :
         favorited: String?,
         offset: Int?,
         limit: Int?,
-    ): Response =
-        Response
+    ): Response {
+        val viewerId = securityContext.currentUserId
+        val articles =
+            articleQueryService.getArticles(
+                tag = tag,
+                author = author,
+                favorited = favorited,
+                limit = limit ?: 20,
+                offset = offset ?: 0,
+                viewerId = viewerId,
+            )
+
+        return Response
             .ok(
                 GetArticlesFeed200Response()
-                    .articles(emptyList())
-                    .articlesCount(0),
+                    .articles(articles as List<com.example.api.model.GetArticlesFeed200ResponseArticlesInner>)
+                    .articlesCount(articles.size),
             ).build()
+    }
 
     @RolesAllowed("**")
     override fun getArticlesFeed(
         offset: Int?,
         limit: Int?,
-    ): Response =
-        Response
+    ): Response {
+        val viewerId = securityContext.currentUserId!!
+        val articles =
+            articleQueryService.getArticlesFeed(
+                limit = limit ?: 20,
+                offset = offset ?: 0,
+                viewerId = viewerId,
+            )
+
+        return Response
             .ok(
                 GetArticlesFeed200Response()
-                    .articles(emptyList())
-                    .articlesCount(0),
+                    .articles(articles as List<com.example.api.model.GetArticlesFeed200ResponseArticlesInner>)
+                    .articlesCount(articles.size),
             ).build()
+    }
 
     @RolesAllowed("**")
     override fun updateArticle(

@@ -1,4 +1,4 @@
-package com.example.comment
+package com.example.article
 
 import com.example.article.ArticleRepository
 import com.example.shared.exceptions.NotFoundException

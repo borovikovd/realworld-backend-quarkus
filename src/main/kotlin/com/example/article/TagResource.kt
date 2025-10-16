@@ -15,8 +15,7 @@ class TagResource : TagsApi {
         val tags = articleService.getAllTags()
 
         return Response
-            .ok(
-                GetTags200Response().tags(tags),
-            ).build()
+            .ok(GetTags200Response().tags(tags))
+            .build()
     }
 }

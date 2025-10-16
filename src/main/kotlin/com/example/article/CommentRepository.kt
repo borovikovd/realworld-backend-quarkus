@@ -1,4 +1,4 @@
-package com.example.comment
+package com.example.article
 
 import com.example.shared.domain.Repository
 
