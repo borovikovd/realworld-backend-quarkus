@@ -5,7 +5,7 @@ pluginManagement {
         mavenLocal()
     }
     plugins {
-        id("io.quarkus") version "3.38.2"
+        id("io.quarkus") version "3.39.0"
     }
 }
 rootProject.name = "realworld-api"
